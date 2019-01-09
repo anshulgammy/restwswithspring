@@ -32,38 +32,22 @@ public class RestController {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	@ResponseBody
-	public Student findOne(@PathVariable("id") Long id) {
-		try {
-			return CommonUtil.checkNotNull(service.findOne(id));
-		} catch (ResourceNotFoundException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public Student findOne(@PathVariable("id") Long id) throws ResourceNotFoundException {
+		return CommonUtil.checkNotNull(service.findOne(id));
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseStatus(HttpStatus.CREATED)
 	@ResponseBody
 	public List<Student> create(@RequestBody Student student) {
-		try {
-			CommonUtil.checkNotNull(student);
-			service.create(student);
-		} catch (ResourceNotFoundException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return service.create(student);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	@ResponseStatus(HttpStatus.OK)
-	public void update(@PathVariable("id") Long id, @RequestBody Student student) {
-		try {
-			CommonUtil.checkNotNull(student);
-			CommonUtil.checkNotNull(service.getById(student.getId()));
-			service.update(student);
-		} catch (ResourceNotFoundException e) {
-			e.printStackTrace();
-		}
+	public void update(@PathVariable("id") Long id, @RequestBody Student student) throws ResourceNotFoundException {
+		CommonUtil.checkNotNull(student);
+		CommonUtil.checkNotNull(service.getById(student.getId()));
+		service.update(student);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

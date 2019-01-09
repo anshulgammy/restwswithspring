@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.techbrunch.boostrap.webapplication.models.Student;
+import com.techbrunch.boostrap.webapplication.util.ResourceNotFoundException;
 
 @Service
 public class RestService {
@@ -16,39 +17,47 @@ public class RestService {
 		return STUDENT_LIST;
 	}
 
-	public Student findOne(final Long id) {
-		return findStudentById(id);
+	public Student findOne(final Long id) throws ResourceNotFoundException {
+		final int studentIndex = findStudentIndexById(id);
+		if (-1 != studentIndex) {
+			return STUDENT_LIST.get(studentIndex);
+		} else {
+			throw new ResourceNotFoundException();
+		}
 	}
 
 	public void update(final Student student) {
-		Student searchedStudent = findStudentById(student.getId());
-		if (null != searchedStudent) {
-			searchedStudent = student;
+		final int studentIndex = findStudentIndexById(student.getId());
+		if (-1 != studentIndex) {
+			STUDENT_LIST.set(studentIndex, student);
 		}
 	}
 
 	public Student getById(final Long id) {
-		return findStudentById(id);
+		final int studentIndex = findStudentIndexById(id);
+		return STUDENT_LIST.get(studentIndex);
 	}
 
 	public void deleteById(final Long id) {
-		Student searchedStudent = findStudentById(id);
-		if (null != searchedStudent) {
-			STUDENT_LIST.remove(searchedStudent);
+		final int studentIndex = findStudentIndexById(id);
+		if (-1 != studentIndex) {
+			STUDENT_LIST.remove(studentIndex);
 		}
 	}
 
 	public List<Student> create(final Student student) {
+		System.out.println("Inside Create");
+		System.out.println(student.getName());
 		STUDENT_LIST.add(student);
 		return STUDENT_LIST;
 	}
 
-	private Student findStudentById(final Long id) {
+	private int findStudentIndexById(final Long id) {
 		for (Student student : STUDENT_LIST) {
 			if (id.longValue() == student.getId().longValue()) {
-				return student;
+				return STUDENT_LIST.indexOf(student);
 			}
 		}
-		return null;
+		return -1;
 	}
 }
